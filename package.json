@@ -1,0 +1,34 @@
+{
+	"name": "action-artifact",
+	"version": "1.0.0",
+	"description": "Upload artifacts to releases",
+	"main": "dist/index.js",
+	"author": "iCrawl <icrawltogo@gmail.com>",
+	"license": "UNLICENSED",
+	"private": true,
+	"scripts": {
+		"prebuild": "yarn lint",
+		"build": "ncc build src/main.ts --minify",
+		"lint": "eslint src --ext .ts"
+	},
+	"dependencies": {
+		"@actions/core": "^1.1.0",
+		"@actions/github": "^1.1.0",
+		"glob": "^7.1.4"
+	},
+	"devDependencies": {
+		"@octokit/rest": "^16.28.9",
+		"@types/eslint": "^6.1.0",
+		"@types/glob": "^7.1.1",
+		"@types/node": "^12.7.4",
+		"@typescript-eslint/eslint-plugin": "^2.2.0",
+		"@typescript-eslint/parser": "^2.2.0",
+		"@zeit/ncc": "^0.20.5",
+		"eslint": "^6.3.0",
+		"eslint-config-marine": "^4.2.0",
+		"typescript": "^3.6.3"
+	},
+	"eslintConfig": {
+		"extends": "marine/node"
+	}
+}

@@ -1,0 +1,16 @@
+name: 'Upload Release Artifact'
+description: 'Upload artifacts to releases.'
+author: 'iCrawl'
+branding:
+  icon: check-circle
+  color: yellow
+inputs:
+  path:
+    description: 'Glob-like pattern for the path'
+    required: true
+  content-type:
+    required: false
+    default: 'application/octet-stream'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
