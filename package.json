@@ -21,7 +21,7 @@
 		"@types/eslint": "^6.1.0",
 		"@types/glob": "^7.1.1",
 		"@types/node": "^12.7.5",
-		"@typescript-eslint/eslint-plugin": "^2.2.0",
+		"@typescript-eslint/eslint-plugin": "^2.3.0",
 		"@typescript-eslint/parser": "^2.2.0",
 		"@zeit/ncc": "^0.20.5",
 		"eslint": "^6.4.0",
