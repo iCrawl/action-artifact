@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@actions/core": "^1.2.1",
 		"@actions/github": "^2.0.1",
-		"glob": "^7.1.6"
+		"@actions/glob": "^0.1.0"
 	},
 	"devDependencies": {
 		"@octokit/rest": "^16.36.0",

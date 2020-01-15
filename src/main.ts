@@ -1,7 +1,7 @@
-import { GitHub, context } from '@actions/github';
-import { getInput, setFailed, debug } from '@actions/core';
-import { statSync, createReadStream } from 'fs';
-import { sync } from 'glob';
+import { debug, getInput, setFailed } from '@actions/core';
+import { context, GitHub } from '@actions/github';
+import { create } from '@actions/glob';
+import { createReadStream, statSync } from 'fs';
 
 const { GITHUB_TOKEN } = process.env;
 
@@ -21,21 +21,23 @@ async function run() {
 		return setFailed(error.message);
 	}
 
-	const filepath = sync(path, { absolute: true, nocase: true });
-	const file = createReadStream(filepath[0]);
+	const globber = await create(path);
+	for await (const filepath of globber.globGenerator()) {
+		const file = createReadStream(filepath);
 
-	try {
-		await octokit.repos.uploadReleaseAsset({
-			url: upload_url,
-			file: file,
-			name: filepath[0].split('/').slice(-1)[0],
-			headers: {
-				'content-length': statSync(filepath[0]).size,
-				'content-type': contentType
-			}
-		});
-	} catch (error) {
-		setFailed(error.message);
+		try {
+			await octokit.repos.uploadReleaseAsset({
+				url: upload_url,
+				file: file,
+				name: filepath.split('/').slice(-1)[0],
+				headers: {
+					'content-length': statSync(filepath).size,
+					'content-type': contentType
+				}
+			});
+		} catch (error) {
+			setFailed(error.message);
+		}
 	}
 }
 
