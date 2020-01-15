@@ -16,7 +16,9 @@ async function run() {
 	const release_id = context.payload.release.id;
 	let upload_url;
 	try {
-		({ data: { upload_url } } = await octokit.repos.getRelease({ owner, repo, release_id }));
+		({
+			data: { upload_url },
+		} = await octokit.repos.getRelease({ owner, repo, release_id }));
 	} catch (error) {
 		return setFailed(error.message);
 	}
@@ -32,8 +34,8 @@ async function run() {
 				name: filepath.split('/').slice(-1)[0],
 				headers: {
 					'content-length': statSync(filepath).size,
-					'content-type': contentType
-				}
+					'content-type': contentType,
+				},
 			});
 		} catch (error) {
 			setFailed(error.message);
