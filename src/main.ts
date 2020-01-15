@@ -31,7 +31,7 @@ async function run() {
 			await octokit.repos.uploadReleaseAsset({
 				url: upload_url,
 				file: file,
-				name: filepath.split('/').slice(-1)[0],
+				name: process.platform === 'win32' ? filepath.split('\\').slice(-1)[0] : filepath.split('/').slice(-1)[0],
 				headers: {
 					'content-length': statSync(filepath).size,
 					'content-type': contentType,
