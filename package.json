@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@actions/core": "^1.2.2",
-		"@actions/github": "^2.0.1",
+		"@actions/github": "^2.1.0",
 		"@actions/glob": "^0.1.0"
 	},
 	"devDependencies": {
