@@ -5,6 +5,12 @@ import { createReadStream, statSync } from 'fs';
 
 const { GITHUB_TOKEN } = process.env;
 
+interface ReleasePayload {
+	release: {
+		id: number;
+	};
+}
+
 async function run() {
 	const path = getInput('path', { required: true });
 	const contentType = getInput('content-type', { required: true });
@@ -13,14 +19,14 @@ async function run() {
 	debug(`Commit: ${context.sha}`);
 
 	const { owner, repo } = context.repo;
-	const release_id = context.payload.release.id;
+	const release_id = (context.payload as ReleasePayload).release.id;
 	let upload_url;
 	try {
 		({
 			data: { upload_url },
 		} = await octokit.repos.getRelease({ owner, repo, release_id }));
 	} catch (error) {
-		return setFailed(error.message);
+		return setFailed(error);
 	}
 
 	const globber = await create(path);
@@ -38,9 +44,9 @@ async function run() {
 				},
 			});
 		} catch (error) {
-			setFailed(error.message);
+			setFailed(error);
 		}
 	}
 }
 
-run();
+void run();
