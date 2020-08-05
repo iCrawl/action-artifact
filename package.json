@@ -1,6 +1,6 @@
 {
 	"name": "action-artifact",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Upload artifacts to releases",
 	"main": "dist/index.js",
 	"author": "iCrawl <icrawltogo@gmail.com>",
@@ -33,6 +33,9 @@
 		"typescript": "^3.9.7"
 	},
 	"eslintConfig": {
-		"extends": "marine/prettier/node"
+		"extends": "marine/prettier/node",
+		"rules": {
+			"@typescript-eslint/naming-convention": 0
+		}
 	}
 }

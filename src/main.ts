@@ -1,7 +1,7 @@
 import { debug, getInput, setFailed } from '@actions/core';
-import { context, GitHub } from '@actions/github';
+import { context, getOctokit } from '@actions/github';
 import { create } from '@actions/glob';
-import { createReadStream, statSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 
 const { GITHUB_TOKEN } = process.env;
 
@@ -15,7 +15,7 @@ async function run() {
 	const path = getInput('path', { required: true });
 	const contentType = getInput('content-type', { required: true });
 
-	const octokit = new GitHub(GITHUB_TOKEN!);
+	const octokit = getOctokit(GITHUB_TOKEN!);
 	debug(`Commit: ${context.sha}`);
 
 	const { owner, repo } = context.repo;
@@ -31,12 +31,15 @@ async function run() {
 
 	const globber = await create(path);
 	for await (const filepath of globber.globGenerator()) {
-		const file = createReadStream(filepath);
+		const file = readFileSync(filepath, 'binary');
 
 		try {
 			await octokit.repos.uploadReleaseAsset({
+				owner,
+				repo,
+				release_id,
 				url: upload_url,
-				file: file,
+				data: file,
 				name: process.platform === 'win32' ? filepath.split('\\').slice(-1)[0] : filepath.split('/').slice(-1)[0],
 				headers: {
 					'content-length': statSync(filepath).size,
