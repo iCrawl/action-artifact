@@ -1,7 +1,7 @@
 import { debug, getInput, setFailed } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { create } from '@actions/glob';
-import { readFileSync, statSync } from 'fs';
+import { createReadStream, statSync } from 'fs';
 
 const { GITHUB_TOKEN } = process.env;
 
@@ -31,7 +31,7 @@ async function run() {
 
 	const globber = await create(path);
 	for await (const filepath of globber.globGenerator()) {
-		const file = readFileSync(filepath, 'binary');
+		const file = createReadStream(filepath);
 
 		try {
 			await octokit.repos.uploadReleaseAsset({
@@ -39,7 +39,7 @@ async function run() {
 				repo,
 				release_id,
 				url: upload_url,
-				data: file,
+				data: file as any,
 				name: process.platform === 'win32' ? filepath.split('\\').slice(-1)[0] : filepath.split('/').slice(-1)[0],
 				headers: {
 					'content-length': statSync(filepath).size,
