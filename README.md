@@ -1,9 +1,11 @@
 # action-artifact
+
 > Upload artifacts to releases [action](https://github.com/features/actions)
 
-## Usage
+## Usage with release events
 
 `.github/workflows/release.yml`
+
 ```yml
 on:
   release:
@@ -14,19 +16,52 @@ jobs:
     name: Upload Artifact
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: install node v12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: yarn install
-      run: yarn install
-    - name: artifact
-      uses: icrawl/action-artifact@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        path: 'Someting*.exe'
+      - uses: actions/checkout@v3
+      - name: install node v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: yarn install
+        run: yarn install
+      - name: artifact
+        uses: icrawl/action-artifact@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: 'Someting*.exe'
+```
+
+## Usage workflow dispatches
+
+`.github/workflows/manual-release.yml`
+
+```yml
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag of which the assets should be updated
+        required: true
+
+jobs:
+  artifact:
+    name: Upload Artifact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: install node v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 12
+      - name: yarn install
+        run: yarn install
+      - name: artifact
+        uses: icrawl/action-artifact@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: 'Someting*.exe'
+          release-tag: ${{ github.event.inputs.tag }}
 ```
 
 ## Contributing

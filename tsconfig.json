@@ -3,7 +3,7 @@
 		"strict": true,
 		"moduleResolution": "node",
 		"module": "esnext",
-		"target": "es2019",
+		"target": "es2021",
 		"lib": [
 			"esnext",
 			"esnext.array",

@@ -8,9 +8,13 @@ inputs:
   path:
     description: 'Glob-like pattern for the path'
     required: true
+  release-tag:
+    description: 'Tag of the release, this can be used when the action is not triggered by a release but by a workflow dispatch. The release will be fetched based on the tag.'
+    required: false
   content-type:
+    description: 'Content-Type header to use'
     required: false
     default: 'application/octet-stream'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
