@@ -1,32 +1,59 @@
+import { createReadStream, statSync } from 'node:fs';
+import process from 'node:process';
 import { debug, getInput, setFailed } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { create } from '@actions/glob';
-import { createReadStream, statSync } from 'fs';
 
 const { GITHUB_TOKEN } = process.env;
 
-interface ReleasePayload {
+type ReleasePayload = {
 	release: {
 		id: number;
 	};
+};
+
+declare global {
+	namespace NodeJS {
+		// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+		interface ProcessEnv {
+			GITHUB_TOKEN: string;
+		}
+	}
 }
 
 async function run() {
 	const path = getInput('path', { required: true });
 	const contentType = getInput('content-type', { required: true });
+	const tagFromInput = getInput('release-tag', { required: false });
 
-	const octokit = getOctokit(GITHUB_TOKEN!);
+	const octokit = getOctokit(GITHUB_TOKEN);
 	debug(`Commit: ${context.sha}`);
 
 	const { owner, repo } = context.repo;
-	const release_id = (context.payload as ReleasePayload).release.id;
+
+	let release_id: number;
+
+	if (tagFromInput) {
+		const response = await octokit.rest.repos.getReleaseByTag({ owner, repo, tag: tagFromInput });
+
+		if (response.status !== 200) {
+			setFailed(`Failed to get release by tag: ${response.status}`);
+			process.exit(1);
+		}
+
+		release_id = response.data.id;
+	} else {
+		release_id = (context.payload as ReleasePayload).release.id;
+	}
+
 	let upload_url;
 	try {
 		({
 			data: { upload_url },
-		} = await octokit.repos.getRelease({ owner, repo, release_id }));
+		} = await octokit.rest.repos.getRelease({ owner, repo, release_id }));
 	} catch (error) {
-		return setFailed(error);
+		setFailed(error as string);
+		return;
 	}
 
 	const globber = await create(path);
@@ -34,7 +61,7 @@ async function run() {
 		const file = createReadStream(filepath);
 
 		try {
-			await octokit.repos.uploadReleaseAsset({
+			await octokit.rest.repos.uploadReleaseAsset({
 				owner,
 				repo,
 				release_id,
@@ -47,7 +74,7 @@ async function run() {
 				},
 			});
 		} catch (error) {
-			setFailed(error);
+			setFailed(error as string);
 		}
 	}
 }
